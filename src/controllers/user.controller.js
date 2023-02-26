@@ -1,4 +1,6 @@
-export function create(req, res){
+import * as userService from "../services/user.service.js";
+
+export async function create(req, res){
 
     const {name, username, email, password, avatar, background} = req.body;
 
@@ -6,9 +8,16 @@ export function create(req, res){
         res.status(422).send({message:"send all required fields"});
     };
 
+    const created_user = await userService.create(req.body);
+
+    if (!created_user){
+        res.status(500).send("Unexpected error occurred")
+    }
+
     res.status(201).send({
         massage: "user created",
-        user: { 
+        user: {
+            id: created_user._id,
             name,
             username,
             email,
