@@ -8,22 +8,29 @@ export async function create(req, res){
         res.status(422).send({message:"send all required fields"});
     };
 
-    const created_user = await userService.create(req.body);
+    try{
+        const created_user = await userService.create(req.body);
 
-    if (!created_user){
-        res.status(500).send("Unexpected error occurred")
+        res.status(201).send({
+            massage: "user created",
+            user: {
+                id: created_user._id,
+                name,
+                username,
+                email,
+                avatar,
+                background
+            }
+        });
     }
+    catch (err){
+        if (err.code == 11000){
+            res.status(409).send({message:"User already exist"});
+        }else{
+            res.status(500).send({message:"Unexpected error occurred"});
+        };
+    }   
 
-    res.status(201).send({
-        massage: "user created",
-        user: {
-            id: created_user._id,
-            name,
-            username,
-            email,
-            avatar,
-            background
-        }
-    });
+
 
 };
